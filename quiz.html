@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizWorld</title>
+    <link rel="icon" type="image/x-icon" href="l">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url("hatter.jpg");
+            background-size: 100%;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .question {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            
+        }
+        .answer {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #5c5a5a;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .answer.correct {
+            background-color: #28a745 !important;
+            color: rgb(255, 255, 255);
+        }
+        .answer.wrong {
+            background-color: #dc3545 !important;
+            color: white;
+        }
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">QuizWorld </h1>
+        <div id="quiz-container" class="mt-4">
+        </div>
+        <p id="score" class="score"></p>
+        <p id="timer" class="timer"></p>
+    </div>
+
+    <script>
+        const questions = {
+            easy: [
+            {
+        question: "Mi Magyarország fővárosa?",
+        answers: ["Debrecen", "Budapest", "Szeged", "Győr"],
+        correct: 1
+    },
+    {
+        question: "Melyik az alábbiak közül nem egy programozási nyelv?",
+        answers: ["HTML", "CSS", "JavaScript", "All of the above"],
+        correct: 3 // All of the above
+    },
+    {
+        question: "Milyen színű a narancs?",
+        answers: ["Piros", "Kék", "Sárga", "Narancssárga"],
+        correct: 3 // Narancssárga
+    },
+    {
+        question: "Melyik a legnagyobb óceán a Földön?",
+        answers: ["Atlanti-óceán", "Csendes-óceán", "India-óceán", "Északi-óceán"],
+        correct: 1 // Csendes-óceán
+    },
+    {
+        question: "Ki írta a 'Romeo és Júlia' című művet?",
+        answers: ["Victor Hugo", "William Shakespeare", "Charles Dickens", "Mark Twain"],
+        correct: 1 // William Shakespeare
+    },
+    {
+        question: "Melyik a leggyorsabb állat a világon?",
+        answers: ["Gepárd", "Sas", "Kenguru", "Egyiptomi tengerimalac"],
+        correct: 0 // Gepárd
+    },
+    {
+        question: "Mi az RGB színmodell jelentése?",
+        answers: ["Red, Green, Blue", "Red, Gold, Blue", "Red, Green, Black", "Red, Grey, Blue"],
+        correct: 0 // Red, Green, Blue
+    },
+    {
+        question: "Melyik bolygó a Naprendszerünk legnagyobb bolygója?",
+        answers: ["Föld", "Mars", "Jupiter", "Szaturnusz"],
+        correct: 2 // Jupiter
+    },
+    {
+        question: "Melyik az alábbiak közül a legnépszerűbb közösségi média platform?",
+        answers: ["Twitter", "Instagram", "Facebook", "LinkedIn"],
+        correct: 2 // Facebook
+    },
+    {
+        question: "Melyik a legnagyobb szárazföldi állat?",
+        answers: ["Elefánt", "Zebra", "Oroszlán", "Gorilla"],
+        correct: 0 // Elefánt
+    },
+    {
+        question: "Melyik a legelterjedtebb programozási nyelv a webfejlesztésben?",
+        answers: ["Python", "Java", "JavaScript", "C++"],
+        correct: 2 // JavaScript
+    },
+    {
+        question: "Hány lába van egy póknak?",
+        answers: ["6", "8", "10", "12"],
+        correct: 1 // 8
+    },
+    {
+        question: "Mi a víz kémiai képlete?",
+        answers: ["H2O", "CO2", "O2", "NaCl"],
+        correct: 0 // H2O
+    },
+    {
+        question: "Milyen típusú fájl a JPG?",
+        answers: ["Dokumentum", "Kép", "Videó", "Zene"],
+        correct: 1 // Kép
+    },
+    {
+        question: "Melyik sportágban szerepel a 'labda' kifejezés?",
+        answers: ["Úszás", "Foci", "Torna", "Futás"],
+        correct: 1 // Foci
+    },
+    {
+        question: "Ki volt a híres fizikus, aki a relativitáselméletet alkotta meg?",
+        answers: ["Isaac Newton", "Galileo Galilei", "Albert Einstein", "Niels Bohr"],
+        correct: 2 // Albert Einstein
+    },
+    {
+        question: "Melyik ország fővárosa Amszterdam?",
+        answers: ["Belgium", "Hollandia", "Németország", "Franciaország"],
+        correct: 1 // Hollandia
+    },
+    {
+        question: "Mi a legkisebb szám, ami osztható 2-vel?",
+        answers: ["1", "2", "0", "-1"],
+        correct: 2 // 0
+    },
+    {
+        question: "Hány kontinens van a Földön?",
+        answers: ["5", "6", "7", "8"],
+        correct: 2 // 7
+    },
+    {
+        question: "Melyik város híres a Kolosszális Szoborról?",
+        answers: ["Athén", "Róma", "Kairó", "New York"],
+        correct: 0 // Athén
+    }
+            ],
+            medium: [
+            {
+        question: "Melyik a legnagyobb szám a következő listán?",
+        answers: ["42", "100", "99", "10"],
+        correct: 1 // 100
+    },
+    {
+        question: "Melyik az alábbi programozási nyelvek közül nem objektum-orientált?",
+        answers: ["Java", "Python", "C++", "HTML"],
+        correct: 3 // HTML
+    },
+    {
+        question: "Ki volt a 20. századi amerikai elnök, aki megnyerte a második világháborút?",
+        answers: ["Franklin D. Roosevelt", "Harry S. Truman", "John F. Kennedy", "Richard Nixon"],
+        correct: 0 // Franklin D. Roosevelt
+    },
+    {
+        question: "Melyik elem a periódusos rendszerben az O?",
+        answers: ["Oxigén", "Ón", "Ozmium", "Arzén"],
+        correct: 0 // Oxigén
+    },
+    {
+        question: "Melyik országban található a híres Taj Mahal?",
+        answers: ["India", "Pakisztán", "Banglades", "Nepál"],
+        correct: 0 // India
+    },
+    {
+        question: "Hogyan hívják a folyamatot, amikor a víz gőzzé alakul?",
+        answers: ["Párolgás", "Kondenzáció", "Fagyás", "Olvadás"],
+        correct: 0 // Párolgás
+    },
+    {
+        question: "Mi a neve a NASA űrkutatási ügynökségnek?",
+        answers: ["National Aeronautics and Space Administration", "National Aeronautics and Space Agency", "National Aerospace and Space Administration", "National Aeronautics and Space Association"],
+        correct: 0 // National Aeronautics and Space Administration
+    },
+    {
+        question: "Melyik művész alkotta meg a Mona Lisát?",
+        answers: ["Vincent van Gogh", "Claude Monet", "Pablo Picasso", "Leonardo da Vinci"],
+        correct: 3 // Leonardo da Vinci
+    },
+    {
+        question: "Melyik a legnagyobb csillag a Naprendszerben?",
+        answers: ["A Nap", "Sirius", "Proxima Centauri", "Betelgeuse"],
+        correct: 0 // A Nap
+    },
+    {
+        question: "Ki írta a '1984' című regényt?",
+        answers: ["George Orwell", "Aldous Huxley", "Ray Bradbury", "F. Scott Fitzgerald"],
+        correct: 0 // George Orwell
+    },
+    {
+        question: "Melyik az alábbiak közül a leggyorsabb emlős?",
+        answers: ["Elefánt", "Gepárd", "Zebra", "Sün"],
+        correct: 1 // Gepárd
+    },
+    {
+        question: "Melyik nyelvet beszélik főként Brazíliában?",
+        answers: ["Spanyol", "Portugál", "Angol", "Francia"],
+        correct: 1 // Portugál
+    },
+    {
+        question: "Melyik szerv felelős a vér pumpálásáért az emberi testben?",
+        answers: ["Tüdő", "Szív", "Máj", "Vese"],
+        correct: 1 // Szív
+    },
+    {
+        question: "Melyik a legnagyobb élő organizmus a Földön?",
+        answers: ["Kék bálna", "Bamboo", "Giant Sequoia", "Fungal Mycelium"],
+        correct: 3 // Fungal Mycelium
+    },
+    {
+        question: "Melyik az alábbi városok közül található a legnagyobb népsűrűség?",
+        answers: ["Tokyo", "New York", "Mumbai", "Párizs"],
+        correct: 2 // Mumbai
+    },
+    {
+        question: "Hány rétege van a Földnek?",
+        answers: ["1", "2", "3", "4"],
+        correct: 2 // 3
+    },
+    {
+        question: "Melyik az alábbi államok közül a legnagyobb az Egyesült Államokban?",
+        answers: ["Texas", "Kalifornia", "Florida", "Alaszka"],
+        correct: 3 // Alaszka
+    },
+    {
+        question: "Mi a JavaScript leggyakoribb használati területe?",
+        answers: ["Webfejlesztés", "Mobil fejlesztés", "Játékfejlesztés", "Asztali alkalmazások"],
+        correct: 0 // Webfejlesztés
+    },
+    {
+        question: "Melyik a legnagyobb űrhajós ügynökség a világon?",
+        answers: ["NASA", "ESA", "Roscosmos", "CNSA"],
+        correct: 0 // NASA
+    },
+    {
+        question: "Melyik a legmagasabb hegy a világon?",
+        answers: ["K2", "Kangchenjunga", "Everest", "Lhotse"],
+        correct: 2 // Everest
+    },
+    {
+        question: "Ki a Harry Potter könyvek szerzője?",
+        answers: ["J.R.R. Tolkien", "J.K. Rowling", "George R.R. Martin", "C.S. Lewis"],
+        correct: 1 // J.K. Rowling
+    }
+
+            ],
+            hard: [
+            {
+        question: "Melyik szerv a legnagyobb az emberi testben?",
+        answers: ["Máj", "Bőr", "Tüdő", "Szív"],
+        correct: 1 // Bőr
+    },
+    {
+        question: "Ki volt a híres fizikus, aki a fény sebességét kutatta?",
+        answers: ["Isaac Newton", "Albert Einstein", "Niels Bohr", "James Clerk Maxwell"],
+        correct: 1 // Albert Einstein
+    },
+    {
+        question: "Milyen anyagból készül a gyémánt?",
+        answers: ["Szén", "Oxigén", "Kén", "Hidrogén"],
+        correct: 0 // Szén
+    },
+    {
+        question: "Mi a legnagyobb bolygó a Naprendszerben?",
+        answers: ["Föld", "Jupiter", "Mars", "Szaturnusz"],
+        correct: 1 // Jupiter
+    },
+    {
+        question: "Melyik művész festette a 'Sikoly' című képet?",
+        answers: ["Pablo Picasso", "Vincent van Gogh", "Edvard Munch", "Claude Monet"],
+        correct: 2 // Edvard Munch
+    },
+    {
+        question: "Ki volt a második világháború alatt a brit miniszterelnök?",
+        answers: ["Neville Chamberlain", "Winston Churchill", "Clement Attlee", "Harold Wilson"],
+        correct: 1 // Winston Churchill
+    },
+    {
+        question: "Melyik az alábbiak közül a legnagyobb energiájú részecske?",
+        answers: ["Proton", "Neutron", "Elektron", "Neutrínó"],
+        correct: 3 // Neutrínó
+    },
+    {
+        question: "Mi a Föld legmélyebb pontja?",
+        answers: ["A Mariana-árok", "A Kalahári-sivatag", "A Tonga-árok", "A Dél-Amerikai árok"],
+        correct: 0 // A Mariana-árok
+    },
+    {
+        question: "Milyen típusú űrhajót küldtek a Marsra 1976-ban?",
+        answers: ["Viking", "Apollo", "Voyager", "Curiosity"],
+        correct: 0 // Viking
+    },
+    {
+        question: "Mi a legmagasabb hegy a Himalájában?",
+        answers: ["K2", "Everest", "Kangchenjunga", "Lhotse"],
+        correct: 1 // Everest
+    },
+    {
+        question: "Melyik nyelvet beszélik az Egyesült Államokban?",
+        answers: ["Spanyol", "Francia", "Angol", "Portugál"],
+        correct: 2 // Angol
+    },
+    {
+        question: "Ki volt a híres olasz felfedező, aki Amerikát fedezte fel 1492-ben?",
+        answers: ["Ferdinánd Magellán", "Marco Polo", "Cristoforo Colombo", "Amerigo Vespucci"],
+        correct: 2 // Cristoforo Colombo
+    },
+    {
+        question: "Melyik anyag képes a legmagasabb hőmérsékletet elérni?",
+        answers: ["Vas", "Réz", "Magnezium", "Grafit"],
+        correct: 3 // Grafit
+    },
+    {
+        question: "Ki volt a híres francia író, aki a 'A Karamazov testvérek' című művet írta?",
+        answers: ["Lev Tolsztoj", "Fjodor Dosztojevszkij", "Anton Csehov", "Mihail Bulgakov"],
+        correct: 1 // Fjodor Dosztojevszkij
+    },
+    {
+        question: "Melyik szerv az emberi testben felelős a hormontermelésért?",
+        answers: ["Máj", "Hasnyálmirigy", "Vese", "Tüdő"],
+        correct: 1 // Hasnyálmirigy
+    },
+    {
+        question: "Melyik az alábbi fizikai mennyiségek közül a legnagyobb?",
+        answers: ["Erő", "Munka", "Teljesítmény", "Energia"],
+        correct: 3 // Energia
+    },
+    {
+        question: "Melyik matematikai állítás igaz a Pitagorasz-tételre?",
+        answers: ["a^2 + b^2 = c^2", "a^2 - b^2 = c^2", "a + b = c", "a^3 + b^3 = c^3"],
+        correct: 0 // a^2 + b^2 = c^2
+    },
+    {
+        question: "Ki volt az első ember, aki a Holdra lépett?",
+        answers: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"],
+        correct: 1 // Neil Armstrong
+    },
+    {
+        question: "Melyik az alábbiak közül az élőlények legkisebb egysége?",
+        answers: ["Szövet", "Sejt", "Szervezet", "Rendszer"],
+        correct: 1 // Sejt
+    },
+    {
+        question: "Melyik a legnagyobb emlős állat a Földön?",
+        answers: ["Elefánt", "Bálna", "Zebra", "Tigris"],
+        correct: 1 // Bálna
+    },
+    {
+        question: "Ki volt a híres német fizikus, aki a relativitáselméletet alkotta meg?",
+        answers: ["Isaac Newton", "Niels Bohr", "Albert Einstein", "Max Planck"],
+        correct: 2 // Albert Einstein
+    }
+            ]
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const difficulty = urlParams.get('difficulty');
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIMER_DURATION = 10; // 10 másodperc
+
+        function loadQuestion() {
+            const questionContainer = document.getElementById('quiz-container');
+            const question = questions[difficulty][currentQuestionIndex];
+
+            questionContainer.innerHTML = `
+                <div class="question">${question.question}</div>
+                ${question.answers.map((answer, index) => `
+                    <div class="answer" onclick="checkAnswer(${index})">${answer}</div>
+                `).join('')}
+            `;
+
+            startTimer();
+        }
+
+        function startTimer() {
+            let timeRemaining = TIMER_DURATION;
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.innerText = `Idő hátra: ${timeRemaining} másodperc`;
+
+            timer = setInterval(() => {
+                timeRemaining--;
+                timerDisplay.innerText = `Idő hátra: ${timeRemaining} másodperc`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    checkAnswer(-1); // Időtúllépés, válasz -1
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selected) {
+            clearInterval(timer); // Állítsd le a visszaszámlálást
+            const question = questions[difficulty][currentQuestionIndex];
+            const answers = document.querySelectorAll('.answer');
+
+            if (selected === question.correct) {
+                answers[selected].classList.add('correct');
+                score++;
+            } else if (selected !== -1) {
+                answers[selected].classList.add('wrong');
+                answers[question.correct].classList.add('correct');
+            }
+
+            currentQuestionIndex++;
+            setTimeout(() => {
+                if (currentQuestionIndex < questions[difficulty].length) {
+                    loadQuestion();
+                } else {
+                    showScore();
+                }
+            }, 1000);
+        }
+
+        function showScore() {
+            const questionContainer = document.getElementById('quiz-container');
+            questionContainer.innerHTML = '';
+            const scoreContainer = document.getElementById('score');
+            scoreContainer.innerHTML = `Elért pontszám: ${score} / ${questions[difficulty].length}`;
+            
+            // Tárold a pontszámot és nehézségi szintet localStorage-ban
+            localStorage.setItem('quizScore', score);
+            localStorage.setItem('quizDifficulty', difficulty);
+
+            // Nehéz szint és legalább 1 pont esetén szerencsekerék
+            if (difficulty === 'hard' && score >= 1) {
+                window.location.href = "wheel.html"; // Irányítsd a szerencsekerékre
+            } else {
+                alert("Nem értél el elegendő pontot a szerencsekerékhez.");
+            }
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
